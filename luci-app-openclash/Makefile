@@ -12,9 +12,9 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
-	TITLE:=LuCI support for clash
-	PKGARCH:=all
-	DEPENDS:=+iptables +dnsmasq-full +coreutils +coreutils-nohup +bash +curl +jsonfilter +ca-certificates +ipset +ip-full +iptables-mod-tproxy
+	TITLE:=Clash luci for HomeLede firmware.
+	PKGARCH:=x86_64
+	DEPENDS:=@TARGET_x86_64 +iptables +dnsmasq-full +coreutils +coreutils-nohup +bash +curl +jsonfilter +ca-certificates +ipset +ip-full +iptables-mod-tproxy
 	MAINTAINER:=vernesong
 endef
 

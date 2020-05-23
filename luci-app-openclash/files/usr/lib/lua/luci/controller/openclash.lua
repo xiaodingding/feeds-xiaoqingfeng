@@ -60,7 +60,7 @@ local function mode()
 end
 
 local function homeclash()
-	return os.date("%Y-%m-%d %H:%M:%S",fs.mtime("/etc/openclash/HomeClash.yaml"))
+	return os.date("%Y-%m-%d %H:%M:%S",fs.mtime("/etc/openclash/homeclash.yaml"))
 end
 
 local function ipdb()

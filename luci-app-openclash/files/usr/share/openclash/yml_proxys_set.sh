@@ -873,6 +873,309 @@ ${UCI_SET}Others="Others"
 	${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Proxy" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Proxy" >/dev/null 2>&1
 }
+elif [ "$rule_sources" = "homeclash" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
+  echo "使用homeclash规则创建中..." >$START_LOG
+  echo "proxy-groups:" >>$SERVER_FILE
+  cat >>"$SERVER_FILE" <<-EOF
+# url-test 通过指定的 URL 测试并选择延迟最低的节点
+# 希望使用多台服务器中延迟最低的，请启用这组设置
+- name: Auto - UrlTest
+  type: url-test
+EOF
+  if [ -f "/tmp/Proxy_Server" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  proxies:
+EOF
+  fi
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+  url: http://www.gstatic.com/generate_204
+  interval: "300"
+  cat >>"$SERVER_FILE" <<-EOF
+# fallback 通过指定的 URL 测试并选择可用的节点，当 1 故障不可用时自动切换到 2 以此类推
+# 希望使用自动故障切换，请启用这组设置
+- name: Auto - Fallback
+  type: fallback
+EOF
+  if [ -f "/tmp/Proxy_Server" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  proxies:
+EOF
+  fi
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+  url: http://www.gstatic.com/generate_204
+  interval: "150"
+  cat >>"$SERVER_FILE" <<-EOF
+# 希望多个服务器之间平均分配流量（自动负载均衡），请启用这个设置
+- name: Auto - LoadBalance
+ type: load-balance
+EOF
+  if [ -f "/tmp/Proxy_Server" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  proxies:
+EOF
+  fi
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+  url: http://www.gstatic.com/generate_204
+  interval: "300"
+- name: Proxy
+  type: select
+  proxies:
+    - Auto - UrlTest
+    - Auto - Fallback
+    - Auto - LoadBalance
+    - DIRECT
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 代理节点选择
+# 大陆站点
+- name: CNSites
+  type: select
+  proxies:
+    - DIRECT
+    - Proxy
+# 海外站点
+- name: OverseasSites
+  type: select
+  proxies:
+    - Proxy
+    - DIRECT
+# 不匹配规则站点默认动作
+- name: DefaultRoute
+  type: select
+  proxies:
+    - Proxy
+    - DIRECT
+    - CNSites
+# 大陆音视频站点
+- name: CNSites-Media
+  type: select
+  proxies:
+    - CNSites
+    - DIRECT
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 大陆音视频站点-网易云音乐
+- name: CNSites-Media-NeteaseMusic
+  type: select
+  proxies:
+    - CNSites
+    - DIRECT
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 大陆站点-苹果中国
+- name: CNSites-Apple
+  type: select
+  proxies:
+    - CNSites
+    - DIRECT
+    - Proxy
+# 海外站点-苹果
+- name: OverseasSites-Apple
+  type: select
+  proxies:
+    - DIRECT
+    - OverseasSites
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-Steam
+- name: OverseasSites-Steam
+  type: select
+  proxies:
+    - DIRECT
+    - OverseasSites
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-微软
+- name: OverseasSites-Microsoft
+  type: select
+  proxies:
+    - DIRECT
+    - OverseasSites
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-PayPal
+- name: OverseasSites-PayPal
+  type: select
+  proxies:
+    - DIRECT
+    - OverseasSites
+    - Proxy
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-测速
+- name: OverseasSites-Speedtest
+  type: select
+  proxies:
+    - Proxy
+    - OverseasSites
+    - DIRECT
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-音视频站点-Netflix
+- name: OverseasSites-Media-Netflix
+  type: select
+  proxies:
+    - OverseasSites-Media
+    - DIRECT
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-音视频站点
+- name: OverseasSites-Media
+  type: select
+  proxies:
+    - Proxy
+    - OverseasSites
+    - DIRECT
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+  cat >>"$SERVER_FILE" <<-EOF
+# 海外站点-大陆FW阻断
+- name: OverseasSites-Blocked
+  type: select
+  proxies:
+    - Proxy
+    - OverseasSites
+    - DIRECT
+EOF
+  cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
+  if [ -f "/tmp/Proxy_Provider" ]; then
+    cat >>"$SERVER_FILE" <<-EOF
+  use:
+EOF
+  fi
+  cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
+
+  ${UCI_SET}rule_source="homeclash"
+  ${UCI_SET}CNSites="CNSites"
+  ${UCI_SET}OverseasSites="OverseasSites"
+  ${UCI_SET}Proxy="Proxy"
+  ${UCI_SET}DefaultRoute="DefaultRoute"
+  ${UCI_SET}CNSites-Media="CNSites-Media"
+  ${UCI_SET}CNSites-Media-NeteaseMusic="CNSites-Media-NeteaseMusic"
+  ${UCI_SET}CNSites-Apple="CNSites-Apple"
+  ${UCI_SET}OverseasSites-Apple="OverseasSites-Apple"
+  ${UCI_SET}OverseasSites-Steam="OverseasSites-Steam"
+  ${UCI_SET}OverseasSites-Microsoft="OverseasSites-Microsoft"
+  ${UCI_SET}OverseasSites-PayPal="OverseasSites-PayPal"
+  ${UCI_SET}OverseasSites-Speedtest="OverseasSites-Speedtest"
+  ${UCI_SET}OverseasSites-Media-Netflix="OverseasSites-Media-Netflix"
+  ${UCI_SET}OverseasSites-Media="OverseasSites-Media"
+  ${UCI_SET}OverseasSites-Blocked="OverseasSites-Blocked"
+  [ "$config_auto_update" -eq 1 ] && [ "$new_servers_group_set" -eq 1 ] && {
+    ${UCI_SET}servers_update="1"
+    ${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Auto - Fallback" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - Fallback" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Auto - LoadBalance" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - LoadBalance" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Proxy" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Proxy" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSites" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="DefaultRoute" >/dev/null 2>&1 && ${UCI_ADD_LIST}="DefaultRoute" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSites-Media" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Media" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSites-Media-NeteaseMusic" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Media-NeteaseMusic" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSites-Apple" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Apple" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Steam" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Steam" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Microsoft" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Microsoft" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-PayPal" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-PayPal" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Speedtest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Speedtest" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Media" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Media" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Media-Netflix" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Media-Netflix" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSites-Blocked" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Blocked" >/dev/null 2>&1
+  }
 fi
 
 if [ "$create_config" != "0" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
