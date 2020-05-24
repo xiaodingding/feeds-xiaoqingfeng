@@ -897,7 +897,7 @@ EOF
   cat >>"$SERVER_FILE" <<-EOF
   url: http://www.gstatic.com/generate_204
   interval: "300"
-  cat >>"$SERVER_FILE" <<-EOF
+
 # fallback 通过指定的 URL 测试并选择可用的节点，当 1 故障不可用时自动切换到 2 以此类推
 # 希望使用自动故障切换，请启用这组设置
 - name: Auto - Fallback
@@ -918,7 +918,7 @@ EOF
   cat >>"$SERVER_FILE" <<-EOF
   url: http://www.gstatic.com/generate_204
   interval: "150"
-  cat >>"$SERVER_FILE" <<-EOF
+
 # 希望多个服务器之间平均分配流量（自动负载均衡），请启用这个设置
 - name: Auto - LoadBalance
  type: load-balance
@@ -975,7 +975,7 @@ EOF
     - DIRECT
     - CNSites
 # 大陆音视频站点
-- name: CNSites-Media
+- name: CNSitesMedia
   type: select
   proxies:
     - CNSites
@@ -991,7 +991,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 大陆音视频站点-网易云音乐
-- name: CNSites-Media-NeteaseMusic
+- name: CNSitesMediaNeteaseMusic
   type: select
   proxies:
     - CNSites
@@ -1007,14 +1007,14 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 大陆站点-苹果中国
-- name: CNSites-Apple
+- name: CNSitesApple
   type: select
   proxies:
     - CNSites
     - DIRECT
     - Proxy
 # 海外站点-苹果
-- name: OverseasSites-Apple
+- name: OverseasSitesApple
   type: select
   proxies:
     - DIRECT
@@ -1030,7 +1030,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-Steam
-- name: OverseasSites-Steam
+- name: OverseasSitesSteam
   type: select
   proxies:
     - DIRECT
@@ -1046,7 +1046,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-微软
-- name: OverseasSites-Microsoft
+- name: OverseasSitesMicrosoft
   type: select
   proxies:
     - DIRECT
@@ -1062,7 +1062,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-PayPal
-- name: OverseasSites-PayPal
+- name: OverseasSitesPayPal
   type: select
   proxies:
     - DIRECT
@@ -1078,7 +1078,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-测速
-- name: OverseasSites-Speedtest
+- name: OverseasSitesSpeedtest
   type: select
   proxies:
     - Proxy
@@ -1094,10 +1094,10 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-音视频站点-Netflix
-- name: OverseasSites-Media-Netflix
+- name: OverseasSitesMediaNetflix
   type: select
   proxies:
-    - OverseasSites-Media
+    - OverseasSitesMedia
     - DIRECT
 EOF
   cat /tmp/Proxy_Server >>$SERVER_FILE 2>/dev/null
@@ -1109,7 +1109,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-音视频站点
-- name: OverseasSites-Media
+- name: OverseasSitesMedia
   type: select
   proxies:
     - Proxy
@@ -1125,7 +1125,7 @@ EOF
   cat /tmp/Proxy_Provider >>$SERVER_FILE 2>/dev/null
   cat >>"$SERVER_FILE" <<-EOF
 # 海外站点-大陆FW阻断
-- name: OverseasSites-Blocked
+- name: OverseasSitesBlocked
   type: select
   proxies:
     - Proxy
@@ -1145,17 +1145,17 @@ EOF
   ${UCI_SET}OverseasSites="OverseasSites"
   ${UCI_SET}Proxy="Proxy"
   ${UCI_SET}DefaultRoute="DefaultRoute"
-  ${UCI_SET}CNSites-Media="CNSites-Media"
-  ${UCI_SET}CNSites-Media-NeteaseMusic="CNSites-Media-NeteaseMusic"
-  ${UCI_SET}CNSites-Apple="CNSites-Apple"
-  ${UCI_SET}OverseasSites-Apple="OverseasSites-Apple"
-  ${UCI_SET}OverseasSites-Steam="OverseasSites-Steam"
-  ${UCI_SET}OverseasSites-Microsoft="OverseasSites-Microsoft"
-  ${UCI_SET}OverseasSites-PayPal="OverseasSites-PayPal"
-  ${UCI_SET}OverseasSites-Speedtest="OverseasSites-Speedtest"
-  ${UCI_SET}OverseasSites-Media-Netflix="OverseasSites-Media-Netflix"
-  ${UCI_SET}OverseasSites-Media="OverseasSites-Media"
-  ${UCI_SET}OverseasSites-Blocked="OverseasSites-Blocked"
+  ${UCI_SET}CNSitesMedia="CNSitesMedia"
+  ${UCI_SET}CNSitesMediaNeteaseMusic="CNSitesMediaNeteaseMusic"
+  ${UCI_SET}CNSitesApple="CNSitesApple"
+  ${UCI_SET}OverseasSitesApple="OverseasSitesApple"
+  ${UCI_SET}OverseasSitesSteam="OverseasSitesSteam"
+  ${UCI_SET}OverseasSitesMicrosoft="OverseasSitesMicrosoft"
+  ${UCI_SET}OverseasSitesPayPal="OverseasSitesPayPal"
+  ${UCI_SET}OverseasSitesSpeedtest="OverseasSitesSpeedtest"
+  ${UCI_SET}OverseasSitesMediaNetflix="OverseasSitesMediaNetflix"
+  ${UCI_SET}OverseasSitesMedia="OverseasSitesMedia"
+  ${UCI_SET}OverseasSitesBlocked="OverseasSitesBlocked"
   [ "$config_auto_update" -eq 1 ] && [ "$new_servers_group_set" -eq 1 ] && {
     ${UCI_SET}servers_update="1"
     ${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
@@ -1165,16 +1165,16 @@ EOF
     ${UCI_DEL_LIST}="CNSites" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites" >/dev/null 2>&1
     ${UCI_DEL_LIST}="OverseasSites" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites" >/dev/null 2>&1
     ${UCI_DEL_LIST}="DefaultRoute" >/dev/null 2>&1 && ${UCI_ADD_LIST}="DefaultRoute" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="CNSites-Media" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Media" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="CNSites-Media-NeteaseMusic" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Media-NeteaseMusic" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="CNSites-Apple" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSites-Apple" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Steam" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Steam" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Microsoft" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Microsoft" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-PayPal" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-PayPal" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Speedtest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Speedtest" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Media" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Media" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Media-Netflix" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Media-Netflix" >/dev/null 2>&1
-    ${UCI_DEL_LIST}="OverseasSites-Blocked" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSites-Blocked" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSitesMedia" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSitesMedia" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSitesMediaNeteaseMusic" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSitesMediaNeteaseMusic" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CNSitesApple" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CNSitesApple" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesSteam" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesSteam" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesMicrosoft" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesMicrosoft" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesPayPal" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesPayPal" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesSpeedtest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesSpeedtest" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesMedia" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesMedia" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesMediaNetflix" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesMediaNetflix" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="OverseasSitesBlocked" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OverseasSitesBlocked" >/dev/null 2>&1
   }
 fi
 
@@ -1227,4 +1227,3 @@ ${UCI_SET}enable=1 2>/dev/null
 [ "$(uci get openclash.config.servers_if_update)" == "0" ] && [ -z "$if_game_proxy" ] && /etc/init.d/openclash restart >/dev/null 2>&1
 ${UCI_SET}servers_if_update=0
 uci commit openclash
-
